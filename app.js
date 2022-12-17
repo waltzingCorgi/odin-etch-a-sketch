@@ -1,4 +1,6 @@
 // Declare and intialize variables
+let sideLength;
+let mode = "Black";
 const button = document.querySelector("button");
 const container = document.querySelector(".wrapper");
 button.hidden = true;   // Using "r" to reset
@@ -6,24 +8,45 @@ button.hidden = true;   // Using "r" to reset
 // Create grid
 createGrid(16);
 
-// Event Listeners
+// Event listeners
 button.addEventListener("click", resetGrid);
 
 window.addEventListener("keydown", (e) => {
-    if (e.key === "r") resetGrid();
-    return;
+    const key = e.key;
+    
+    switch (key) {
+        case "b": 
+            mode = "Black";
+            break;
+        case "g":
+            mode = "Greyscale";
+            break;
+        case "c":
+            mode = "Color";
+            break;
+        case "r":
+            resetGrid();
+            break;
+        case "n":
+            newGrid();
+    }
 })
 
-// Functions
-function resetGrid() {
+// Grid functions
+function newGrid() {
   destroyGrid(container);
 
   // Get and validate side length
-  let sideLength = prompt("Grid length: ", 16);
+  sideLength = prompt("Grid length: ", 16);
   sideLength = parseInt(sideLength);
   if (!isValidSideLength(sideLength)) return;
   
   createGrid(sideLength);
+}
+
+function resetGrid() {
+    destroyGrid(container);
+    createGrid(sideLength);
 }
 
 function createGrid(sideLength) {
@@ -37,7 +60,7 @@ function createGrid(sideLength) {
         div.classList.add("box");
     
         div.addEventListener("mouseenter", () => {
-            div.classList.add("filled");
+            div.style.backgroundColor = getColor(div);
         });
     
         container.appendChild(div);
@@ -57,3 +80,59 @@ function isValidSideLength(sideLength) {
     return 1;
 }
 
+// Color functions
+function getColor(box) {
+    if (mode === "Color") {
+        box.classList.remove("grey");
+        return getRandomColor();
+    } 
+    else if (mode === "Greyscale") return getGreyColor(box);
+    else {
+        box.classList.remove("grey");
+        return black();
+    }
+}
+
+function getRandomColor() {
+    const red = getRandomColorValue();
+    const green = getRandomColorValue();
+    const blue = getRandomColorValue();
+    const opacity = getRandomOpacity();
+    return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
+}
+
+function getRandomColorValue() {
+    return Math.floor(Math.random() * 255);
+}
+
+function getRandomOpacity() {
+    return Math.floor(Math.random() * 101) / 100;
+}
+
+function getGreyColor(box) {
+    if (!box.style.backgroundColor) return initialGrey(box);      // No color
+    const rgba = box.style.backgroundColor.match(/[\d\.]+/g);
+
+    if (box.classList.contains("grey")) return getNextGrey(...rgba);
+    else return initialGrey(box);
+}
+
+function initialGrey(box) {
+    box.classList.add("grey");
+    box.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
+}
+
+function getNextGrey(red, green, blue, alpha) {
+    // Convert alpha into decimal
+    if (alpha == null) alpha = 1;
+    alpha = parseFloat(alpha);
+
+    const nextAlpha = alpha - 0.1;
+    alpha = (nextAlpha < 0) ? alpha : nextAlpha;
+
+    return `rgba(${red}, ${green}, ${blue}, ${alpha}`;
+}
+
+function black() {
+    return "rgba(0, 0, 0)";
+}
