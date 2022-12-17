@@ -1,16 +1,28 @@
-.box {
-    background-color: blue;
+button {
+    width: 100px;
+    height: 100px;
 }
 
 .wrapper {
     display: grid;
-    grid-template-columns: repeat(16, 1fr);
-    grid-auto-rows: 30px;
+    width: 496px;
+    height: 496px;
     gap: 1px;
-    margin: auto;
+    background-color: black;
+    border: 3px solid black;
 }
 
-div.wrapper {
-    background-color: pink;
-    width: 496px;
+.centered {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.box {
+    background-color: whitesmoke;
+}
+
+.filled {
+    background-color: black;
 }
